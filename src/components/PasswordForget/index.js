@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { withRouter, withFirebase } from '../Firebase';
+import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
-import { componentFromStreamWithConfig } from 'recompose';
 
 const PasswordForgetPage = () => (
   <div>
@@ -12,7 +11,7 @@ const PasswordForgetPage = () => (
   </div>
 );
 
-const INTIAL_STATE = {
+const INITIAL_STATE = {
   email: '',
   error: null
 };
@@ -44,7 +43,7 @@ class PasswordForgetFormBase extends Component {
   };
 
   render() {
-    const { email, password } = this.state;
+    const { email, error } = this.state;
 
     const isInvalid = email === '';
 
