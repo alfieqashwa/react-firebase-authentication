@@ -24,31 +24,40 @@ class MessageBase extends Component {
     this.state = {
       text: '',
       loading: false,
-      messages: []
+      messages: [],
+      limit: 5
     };
   }
 
   componentDidMount() {
+    onListenForMessages();
+  }
+
+  onListenForMessages() {
     this.setState({ loading: true });
 
-    this.props.firebase.messages().on('value', snapshot => {
-      const messageObject = snapshot.val();
+    this.props.firebase
+      .messages()
+      .orderByChild('createdAt')
+      .limitToLast(this.state.limit)
+      .on('value', snapshot => {
+        const messageObject = snapshot.val();
 
-      if (messageObject) {
-        // convert messages list from snapshot
-        const messageList = Object.keys(messageObject).map(key => ({
-          ...messageObject[key],
-          uid: key
-        }));
+        if (messageObject) {
+          // convert messages list from snapshot
+          const messageList = Object.keys(messageObject).map(key => ({
+            ...messageObject[key],
+            uid: key
+          }));
 
-        this.setState({
-          messages: messageList,
-          loading: false
-        });
-      } else {
-        this.setState({ messages: null, loading: false });
-      }
-    });
+          this.setState({
+            messages: messageList,
+            loading: false
+          });
+        } else {
+          this.setState({ messages: null, loading: false });
+        }
+      });
   }
 
   componentWillUnmount() {
@@ -87,6 +96,13 @@ class MessageBase extends Component {
     this.props.firebase.message(uid).remove();
   };
 
+  onNextPage = () => {
+    this.setState(
+      state => ({ limit: state.limit + 5 }),
+      this.onListenForMessages
+    );
+  };
+
   render() {
     const { text, messages, loading } = this.state;
 
@@ -94,6 +110,11 @@ class MessageBase extends Component {
       <AuthUserContext.Consumer>
         {authUser => (
           <div>
+            {!loading && message && (
+              <button type='button' onClick={this.onNextPage}>
+                More
+              </button>
+            )}
             {loading && <div>Loading ...</div>}
 
             {messages ? (
