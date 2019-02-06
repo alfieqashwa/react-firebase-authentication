@@ -108,11 +108,7 @@ class MessageBase extends Component {
     this.props.firebase.message(message.uid).set({
       ...message,
       text,
-      editedAt: this.props.firebase.message(message.uid).set({
-        ...message,
-        text,
-        editedAt: this.props.firebase.serverValue.TIMESTAMP
-      })
+      editedAt: this.props.firebase.serverValue.TIMESTAMP
     });
   };
 
@@ -128,6 +124,7 @@ class MessageBase extends Component {
   };
 
   render() {
+    const { users } = this.props;
     const { text, messages, loading } = this.state;
 
     return (
@@ -139,23 +136,21 @@ class MessageBase extends Component {
                 More
               </button>
             )}
-
             {loading && <div>Loading ...</div>}
-
             {messages && (
               <MessageList
                 messages={messages.map(message => ({
                   ...message,
                   user: users
                     ? users[message.userId]
-                    : { userId: message.userId },
+                    : { userId: message.userId }
                 }))}
                 onEditMessage={this.onEditMessage}
-                onRemoveMessage={this.onCreateMessage}
+                onRemoveMessage={this.onRemoveMessage}
               />
-            ) : (
-              <div>There are no messages ...</div>
             )}
+
+            {!messages && <div>There are no messages ...</div>}
 
             <form onSubmit={event => this.onCreateMessage(event, authUser)}>
               <input text='text' value={text} onChange={this.onChangeText} />
@@ -234,6 +229,12 @@ class MessageItem extends Component {
           </span>
         ) : (
           <button onClick={this.onToggleEditMode}>Edit</button>
+        )}
+
+        {!editMode && (
+          <button type='button' onClick={() => onRemoveMessage(message.uid)}>
+            Delete
+          </button>
         )}
       </li>
     );
