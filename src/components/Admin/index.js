@@ -92,7 +92,11 @@ class UserItemBase extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { loading: false, user: null, ...props.location.state };
+    this.state = {
+      loading: false,
+      user: null,
+      ...props.location.state
+    };
   }
 
   componentDidMount() {
@@ -151,19 +155,12 @@ class UserItemBase extends Component {
   }
 }
 
-const UserItem = ({ match }) => (
-  <div>
-    <h2>User ({match.params.id})</h2>
-  </div>
-);
-
-const condition = authUser => authUser && authUser.roles.includes(ROLES.ADMIN);
-
 const UserList = withFirebase(UserListBase);
 const UserItem = withFirebase(UserItemBase);
 
+const condition = authUser => authUser && authUser.roles.includes(ROLES.ADMIN);
+
 export default compose(
   withEmailVerification,
-  withAuthorization(condition),
-  withFirebase
+  withAuthorization(condition)
 )(AdminPage);

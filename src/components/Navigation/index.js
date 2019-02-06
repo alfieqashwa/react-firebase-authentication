@@ -7,17 +7,11 @@ import * as ROUTES from '../../constants/routes';
 import * as ROLES from '../../constants/roles';
 
 const Navigation = () => (
-  <div>
-    <AuthUserContext.Consumer>
-      {authUser =>
-        authUser ? (
-          <NavigationAuth authUser={authUser} />
-        ) : (
-          <NavigationNonAuth />
-        )
-      }
-    </AuthUserContext.Consumer>
-  </div>
+  <AuthUserContext.Consumer>
+    {authUser =>
+      authUser ? <NavigationAuth authUser={authUser} /> : <NavigationNonAuth />
+    }
+  </AuthUserContext.Consumer>
 );
 
 const NavigationAuth = ({ authUser }) => (
@@ -36,6 +30,7 @@ const NavigationAuth = ({ authUser }) => (
         <Link to={ROUTES.ADMIN}>Admin</Link>
       </li>
     )}
+    {console.log(authUser)}
     <li>
       <SignOutButton />
     </li>
